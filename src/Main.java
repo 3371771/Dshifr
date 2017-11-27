@@ -23,7 +23,6 @@ public class Main extends Application{
 
 
 
-
     public Main() throws IOException, JavaLayerException, UnsupportedAudioFileException, LineUnavailableException {
     }
 
@@ -35,9 +34,10 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        primaryStage.setOnCloseRequest(e -> Player.stop_music());
 
         primaryStage.setTitle("D' Шифр");
+
+        primaryStage.setOnCloseRequest(e -> Player.stop_music());
 
         primaryStage.getIcons().add(new Image("icon_mini.jpg"));
 
@@ -56,21 +56,21 @@ public class Main extends Application{
 
         Button button_rsa = new Button("RSA");
         button_rsa.setStyle("-fx-base: #71DF89; ");
-        button_rsa.setFont(Font.font("Courier New", 15));
+        button_rsa.setFont(Font.font("Courier New", 17));
         button_rsa.setOnAction(e -> AlertWindow.display("Алгоритм RSA"));
 
         Button button_des = new Button("DES");
         button_des.setStyle("-fx-base: #71DF89;");
-        button_des.setFont(Font.font("Courier New", 15));
+        button_des.setFont(Font.font("Courier New", 17));
         button_des.setOnAction(e -> AlertWindow.display("Алгоритм DES"));
 
         Button button_aes = new Button("AES");
-        button_aes.setFont(Font.font("Courier New", 15));
+        button_aes.setFont(Font.font("Courier New", 17));
         button_aes.setStyle("-fx-base: #71DF89; ");
         button_aes.setOnAction(e -> AlertWindow.display("Алгоритм AES"));
 
         Button button_stop_m = new Button("Я не люблю Марио!");
-        button_stop_m.setFont(Font.font("Courier New", 15));
+        button_stop_m.setFont(Font.font("Courier New", 12));
         button_stop_m.setStyle("-fx-base: #71DF89; ");
         button_stop_m.setOnAction(e -> stop1());
 
@@ -111,12 +111,13 @@ public class Main extends Application{
         primaryStage.setScene(scene_main);
         primaryStage.show();
 
+        // фон
         BackgroundImage myBI = new BackgroundImage(new Image("fon.jpg", 450, 180, true, false),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
 
         layout_main.setBackground(new Background(myBI));
-
+//
 
         play();
 

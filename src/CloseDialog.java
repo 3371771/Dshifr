@@ -1,28 +1,20 @@
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.crypto.NoSuchPaddingException;
-import javax.swing.*;
-import javax.xml.bind.DatatypeConverter;
-import java.io.*;
-import java.math.BigInteger;
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CloseDialog {
 
@@ -39,8 +31,8 @@ public class CloseDialog {
 
         window_close.initModality(Modality.APPLICATION_MODAL);
         window_close.setTitle("Что сделать?");
-        window_close.setHeight(180);
-        window_close.setWidth(300);
+        window_close.setHeight(190);
+        window_close.setWidth(350);
 
         window_close.setOnCloseRequest(e -> {
             close_req();
@@ -50,9 +42,11 @@ public class CloseDialog {
         Label label_how_close = new Label(title_close);
         label_how_close.setFont(Font.font("Courier New", 17));
 
+        ImageView imageView = new ImageView("atten.jpg");
+
         Button btn_no_save = new Button("Не сохранять");
         btn_no_save.setStyle("-fx-base: #71DF89; ");
-        btn_no_save.setFont(Font.font("Courier New", 15));
+        btn_no_save.setFont(Font.font("Courier New", 17));
         btn_no_save.setOnAction(e -> {
             window_close.close();
             AlertWindow.close();
@@ -60,20 +54,24 @@ public class CloseDialog {
 
         Button btn_save = new Button("Сохранить");
         btn_save.setStyle("-fx-base: #71DF89; ");
-        btn_save.setFont(Font.font("Courier New", 15));
-//        //btn_save.setOnAction(e-> JOptionPane.showMessageDialog(null, "Сохранение", "Файл сохранен" , JOptionPane.ERROR_MESSAGE));
+        btn_save.setFont(Font.font("Courier New", 17));
+
         btn_save.setOnAction(e -> {
             if (AlertWindow.to_do.equals("zash")) {
-                if (AlertWindow.title1.equals("Алгоритм AES")) {
-                    try {
-                        Controller.AES_zash(1);
-                    } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException e1) {
-                        e1.printStackTrace();
-                    }
-                } else if (AlertWindow.title1.equals("Алгоритм DES")) {
+                switch (AlertWindow.title1) {
+                    case "Алгоритм AES":
+                        try {
+                            Controller.AES_zash(1);
+                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
+                    case "Алгоритм DES":
 
-                } else if (AlertWindow.title1.equals("Алгоритм RSA")){
+                        break;
+                    case "Алгоритм RSA":
 
+                        break;
                 }
 
             } else {
@@ -90,11 +88,15 @@ public class CloseDialog {
             btn_no_save.setText("Понятно!");
         });
 
-        VBox layout_close = new VBox(15);
-        layout_close.getChildren().addAll(label_how_close, btn_save, btn_no_save);
-        layout_close.setAlignment(Pos.CENTER);
+        VBox v_layout_close = new VBox(15);
+        v_layout_close.getChildren().addAll(label_how_close, btn_save, btn_no_save);
+        v_layout_close.setAlignment(Pos.CENTER);
 
-        Scene scene_close = new Scene(layout_close);
+        HBox h_layout_close = new HBox(15);
+        h_layout_close.getChildren().addAll(imageView, v_layout_close);
+        h_layout_close.setAlignment(Pos.CENTER);
+
+        Scene scene_close = new Scene(h_layout_close);
 
         window_close.setScene(scene_close);
         window_close.show();
@@ -114,17 +116,24 @@ public class CloseDialog {
         Label do_not_do_this = new Label(adwise);
         do_not_do_this.setFont(Font.font("Courier New", 17));
 
+        ImageView imageView1 = new ImageView("atten_red.jpg");
+
         Button ok_button = new Button("Ok");
         ok_button.setStyle("-fx-base: #71DF89; ");
-        ok_button.setFont(Font.font("Courier New", 15));
+        ok_button.setFont(Font.font("Courier New", 17));
         ok_button.setOnAction(e -> window_do_not.close());
 
-        VBox do_not_layout = new VBox(15);
-        do_not_layout.setPadding(new Insets(13));
-        do_not_layout.getChildren().addAll(do_not_do_this, ok_button);
-        do_not_layout.setAlignment(Pos.CENTER);
+        VBox v_do_not_layout = new VBox(15);
+        v_do_not_layout.setPadding(new Insets(13));
+        v_do_not_layout.getChildren().addAll(do_not_do_this, ok_button);
+        v_do_not_layout.setAlignment(Pos.CENTER);
 
-        Scene scene_do_not = new Scene(do_not_layout);
+        HBox h_do_not_layout = new HBox(15);
+        h_do_not_layout.getChildren().addAll(imageView1, v_do_not_layout);
+        h_do_not_layout.setPadding(new Insets(13));
+        h_do_not_layout.setAlignment(Pos.CENTER);
+
+        Scene scene_do_not = new Scene(h_do_not_layout);
 
         window_do_not.setScene(scene_do_not);
         window_do_not.show();
