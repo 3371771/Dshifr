@@ -31,7 +31,7 @@ class AlertWindow {
         window_choose.setTitle(title);
         title1 = title;
         window_choose.setHeight(200);
-        window_choose.setWidth(600);
+        window_choose.setWidth(550);
 
         window_choose.getIcons().add(new Image("icon_mini.jpg"));
 

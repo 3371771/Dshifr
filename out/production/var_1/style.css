@@ -1,8 +1,0 @@
-
-.button:hover {-fx-text-fill: blue;}
-
-".button:pressed {-fx-background-color: #87CEEB;}"
-
-".label {-fx-text-fill: white;}"
-
-".root {-fx-background-image: url("cat.jpg");}"
