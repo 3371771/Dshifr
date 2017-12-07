@@ -16,12 +16,9 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-public class CloseDialog {
+class CloseDialog {
 
-    static String n;
-
-
-    public static void display(String title_close) {
+    static void display(String title_close) {
         Stage window_close = new Stage();
         if (title_close.equals("Файл зашифрован!")) {
             window_close.getIcons().add(new Image("closet.jpg"));
@@ -59,33 +56,62 @@ public class CloseDialog {
         btn_save.setOnAction(e -> {
             if (AlertWindow.to_do.equals("zash")) {
                 switch (AlertWindow.title1) {
-                    case "Алгоритм AES":
+                    case "AES":
                         try {
-                            Controller.AES_zash(1);
+                            Controller.AES(1);
                         } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException e1) {
                             e1.printStackTrace();
                         }
                         break;
-                    case "Алгоритм DES":
-
+                    case "DES":
+                        try {
+                            Controller.DES(1);
+                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException | ClassNotFoundException e1) {
+                            e1.printStackTrace();
+                        }
                         break;
-                    case "Алгоритм RSA":
-
+                    case "RSA":
+                        try {
+                            Controller.RSA(1);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
                         break;
+                    default: break;
                 }
 
-            } else {
-                if (AlertWindow.title1.equals("Алгоритм AES")) {
-                    try {
-                        Controller.AES_zash(2);
-                    } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException e1) {
-                        e1.printStackTrace();
-                    }
+            } else
+
+            {
+                switch (AlertWindow.title1) {
+                    case  "AES":
+                        try {
+                            Controller.AES(2);
+                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
+                    case "DES":
+                        try {
+                            Controller.DES(2);
+                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException | ClassNotFoundException e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
+                    case "RSA":
+                        try {
+                            Controller.RSA(2);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
+                    default: break;
                 }
             }
             label_how_close.setText("Сохранено!");
             btn_save.setVisible(false);
             btn_no_save.setText("Понятно!");
+            window_close.setTitle("Результат");
         });
 
         VBox v_layout_close = new VBox(15);
@@ -110,6 +136,8 @@ public class CloseDialog {
         window_do_not.setTitle("ВНИМАНИЕ!!");
         window_do_not.setMinHeight(170);
         window_do_not.setMinWidth(170);
+
+        window_do_not.getIcons().add(new Image("icon_.jpg"));
 
         String adwise = randomiz();
 

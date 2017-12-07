@@ -1,4 +1,5 @@
 
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,6 +25,7 @@ class AlertWindow {
     static String to_do;
     static File file;
     static String title1;
+    private static String err;
 
     static void display(String title){
         window_choose = new Stage();
@@ -31,7 +33,7 @@ class AlertWindow {
         window_choose.setTitle(title);
         title1 = title;
         window_choose.setHeight(200);
-        window_choose.setWidth(550);
+        window_choose.setWidth(700);
 
         window_choose.getIcons().add(new Image("icon_mini.jpg"));
 
@@ -71,7 +73,6 @@ class AlertWindow {
 
 
         Scene scene_choose = new Scene(h_layout_choose);
-        //scene_choose.setFill(Color.GREEN);
         window_choose.setScene(scene_choose);
         window_choose.show();
 
@@ -86,47 +87,53 @@ class AlertWindow {
         button_todo_zash.setFont(Font.font("Courier New",17));
         button_todo_zash.setOnAction(e -> {
 
-                    switch (title) {
-                        case "Алгоритм AES":
-                            System.out.println("запуск AES");
-                            to_do = "zash";
-                            break;
 
-                        case "Алгоритм DES":
-                            System.out.println("запуск DES");
-                            Controller.DES_zash();
-                            break;
-                        case "Алгоритм RSA":
-                            System.out.println("запуск RSA");
-                            Controller.RSA_zash();
-                            break;}
+                            to_do = "zash";
+
                     CloseDialog.display("Файл зашифрован!");
                     window_choose.close();
                     }
                 );
 
         Button button_todo_rash = new Button("Расшифровать");
-//        if (title.equals("Алгоритм AES")) {
-//            button_todo_rash.setVisible(false);
-//            button_todo_zash.setText("Шифруем и сорханяем!");
-//        }
-
         button_todo_rash.setStyle("-fx-base: #71DF89;");
         button_todo_rash.setFont(Font.font("Courier New",17));
-        button_todo_rash.setOnAction(e -> {
-            switch (title) {
-                case "Алгоритм AES":
-                    System.out.println("запуск AES");
-                    to_do = "rassh";
-                    break;
-                case "Алгоритм DES":
-                    System.out.println("запуск DES");
-                    break;
-                case "Алгоритм RSA":
-                    System.out.println("запуск RSA");
-                    break;
-            }
-            CloseDialog.display("Файл расшифрован!");
+        button_todo_rash.setOnAction((ActionEvent e) -> {
+
+            //сюда проверку на то ,чем зашифрован
+            //окно вы восклицательным знаком + ОК + отмена
+            //и зашифрован ли вообще (по названию)
+            //-файл заишфрован другим алгоритмом. Получится белебирда, но я могу. Хотите?
+            //-файл не зашифрован. Получится белебирда, но я могу. Хотите?
+
+            if (!file_name_1.contains("_зашифрован")) {
+                System.out.println("Файл не зашифрован. При расшифровке будет фигня!");
+                err = "Файл не зашифрован. При расшифровке будет фигня!";
+                BadFile.display(err);
+            } else if (file_name_1.contains("расшифрован")) {
+                err = "Файл уже был расшифрован. При расшифровке может выйти фигня!";
+                BadFile.display(err);
+            } else if (!file_name_1.contains(title)) {
+                System.out.println(title);
+                System.out.println(file_name_1);
+                err = "Так сделать нельзя. Файл зашифрован другим алгоритмом!";
+                BadFile.display(err);
+            } else fun();
+
+//            switch (title) {
+//                case "Алгоритм AES":
+//                    System.out.println("запуск AES");
+//                    to_do = "rassh";
+//                    break;
+//                case "Алгоритм DES":
+//                    System.out.println("запуск DES");
+//                    to_do = "rassh";
+//                    break;
+//                case "Алгоритм RSA":
+//                    System.out.println("запуск RSA");
+//                    break;
+//            }
+//            CloseDialog.display("Файл расшифрован!");
         });
 
         file_name_label = new Label();
@@ -166,4 +173,10 @@ class AlertWindow {
 //        }
         return file;
     }
+
+    static void fun() {
+        to_do = "rassh";
+        CloseDialog.display("Файл расшифрован!");
+    }
+
 }

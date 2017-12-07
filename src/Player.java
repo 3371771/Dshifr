@@ -1,10 +1,5 @@
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.Scanner;
 
 public class Player extends Thread {
 
@@ -16,12 +11,13 @@ public class Player extends Thread {
        javazoom.jl.player.advanced.PlaybackListener pl = new javazoom.jl.player.advanced.PlaybackListener() {
         };
         try {
-            URL url = Player.class.getClassLoader().getResource("super-mario.mp3");
+            InputStream url = Player.class.getClassLoader().getResourceAsStream("super-mario.mp3");
             assert url != null;
-            File mario = new File(url.toURI());
-            AP = javazoom.jl.player.advanced.jlap.playMp3(mario,pl);
+
+            AP = javazoom.jl.player.advanced.jlap.playMp3(url, 0, Integer.MAX_VALUE, pl);
 
             play = true;
+
         } catch (Exception e) { e.printStackTrace(); }
     }
 

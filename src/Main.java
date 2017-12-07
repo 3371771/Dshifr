@@ -14,6 +14,8 @@ import javazoom.jl.decoder.JavaLayerException;
 
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.NoSuchPaddingException;
 import javax.sound.sampled.*;
 
 
@@ -57,17 +59,17 @@ public class Main extends Application{
         Button button_rsa = new Button("RSA");
         button_rsa.setStyle("-fx-base: #71DF89; ");
         button_rsa.setFont(Font.font("Courier New", 17));
-        button_rsa.setOnAction(e -> AlertWindow.display("Алгоритм RSA"));
+        button_rsa.setOnAction(e -> AlertWindow.display("RSA"));
 
         Button button_des = new Button("DES");
         button_des.setStyle("-fx-base: #71DF89;");
         button_des.setFont(Font.font("Courier New", 17));
-        button_des.setOnAction(e -> AlertWindow.display("Алгоритм DES"));
+        button_des.setOnAction(e -> AlertWindow.display("DES"));
 
         Button button_aes = new Button("AES");
         button_aes.setFont(Font.font("Courier New", 17));
         button_aes.setStyle("-fx-base: #71DF89; ");
-        button_aes.setOnAction(e -> AlertWindow.display("Алгоритм AES"));
+        button_aes.setOnAction(e -> AlertWindow.display("AES"));
 
         Button button_stop_m = new Button("Я не люблю Марио!");
         button_stop_m.setFont(Font.font("Courier New", 12));
@@ -117,10 +119,8 @@ public class Main extends Application{
                 BackgroundSize.DEFAULT);
 
         layout_main.setBackground(new Background(myBI));
-//
 
         play();
-
     }
 
     public void play () {
@@ -130,5 +130,4 @@ public class Main extends Application{
     private void stop1() {
         Player.stop_music();
     }
-
 }
