@@ -12,22 +12,14 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javazoom.jl.decoder.JavaLayerException;
 
-
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.NoSuchPaddingException;
-import javax.sound.sampled.*;
-
-
-
 
 public class Main extends Application{
 
-
-
     public Main() throws IOException, JavaLayerException, UnsupportedAudioFileException, LineUnavailableException {
     }
-
 
     public static void main(String[] args) {
         launch(args);
@@ -36,98 +28,95 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-
         primaryStage.setTitle("D' Шифр");
 
-        primaryStage.setOnCloseRequest(e -> Player.stop_music());
+        primaryStage.setOnCloseRequest(e -> Player.stopMusic());
 
         primaryStage.getIcons().add(new Image("icon_mini.jpg"));
 
         ImageView imageView = new ImageView("icon_.jpg");
+        ImageView imageViewSky = new ImageView("fon.jpg");
+        imageViewSky.setFitHeight(20);
+        imageViewSky.setFitWidth(450);
 
+        Label labelMain = new Label("Выберите алгоритм шифрования:");
+        labelMain.setFont(Font.font("Courier New", 17));
 
-        Label label_main = new Label("Выберите алгоритм шифрования:");
-        label_main.setFont(Font.font("Courier New", 17));
+        Label labelProgName = new Label("D' ШИФР");
+        labelProgName.setFont(Font.font("Courier New", 18));
+        labelProgName.setStyle("-fx-font-weight:bold;");
+        labelProgName.setTextFill(Color.BLACK);
 
+        Button buttonRsa = new Button("RSA");
+        buttonRsa.setStyle("-fx-base: #71DF89; ");
+        buttonRsa.setFont(Font.font("Courier New", 17));
+        buttonRsa.setOnAction(e -> AlertWindow.display("RSA"));
 
-        Label label_prog_name = new Label("D' ШИФР");
-        label_prog_name.setFont(Font.font("Courier New", 18));
-        label_prog_name.setStyle("-fx-font-weight:bold;");
-        label_prog_name.setTextFill(Color.BLACK);
+        Button buttonDes = new Button("DES");
+        buttonDes.setStyle("-fx-base: #71DF89;");
+        buttonDes.setFont(Font.font("Courier New", 17));
+        buttonDes.setOnAction(e -> AlertWindow.display("DES"));
 
+        Button buttonAes = new Button("AES");
+        buttonAes.setFont(Font.font("Courier New", 17));
+        buttonAes.setStyle("-fx-base: #71DF89; ");
+        buttonAes.setOnAction(e -> AlertWindow.display("AES"));
 
-        Button button_rsa = new Button("RSA");
-        button_rsa.setStyle("-fx-base: #71DF89; ");
-        button_rsa.setFont(Font.font("Courier New", 17));
-        button_rsa.setOnAction(e -> AlertWindow.display("RSA"));
+        Button buttonStopMario = new Button("Я не люблю Марио!");
+        buttonStopMario.setFont(Font.font("Courier New", 12));
+        buttonStopMario.setStyle("-fx-base: #71DF89; ");
+        buttonStopMario.setOnAction(e -> stop());
 
-        Button button_des = new Button("DES");
-        button_des.setStyle("-fx-base: #71DF89;");
-        button_des.setFont(Font.font("Courier New", 17));
-        button_des.setOnAction(e -> AlertWindow.display("DES"));
+        HBox buttonBox = new HBox(40);
+        buttonBox.setPadding(new Insets(10, 0, 0, 0));
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.getChildren().addAll(buttonAes, buttonDes, buttonRsa);
 
-        Button button_aes = new Button("AES");
-        button_aes.setFont(Font.font("Courier New", 17));
-        button_aes.setStyle("-fx-base: #71DF89; ");
-        button_aes.setOnAction(e -> AlertWindow.display("AES"));
+        VBox leftBox = new VBox(2);
+        leftBox.setPadding(new Insets(0, 15, 0, 0));
+        leftBox.getChildren().addAll(imageView, labelProgName);
+        leftBox.setAlignment(Pos.TOP_CENTER);
 
-        Button button_stop_m = new Button("Я не люблю Марио!");
-        button_stop_m.setFont(Font.font("Courier New", 12));
-        button_stop_m.setStyle("-fx-base: #71DF89; ");
-        button_stop_m.setOnAction(e -> stop1());
+        VBox centerBox = new VBox(15);
+        centerBox.setAlignment(Pos.TOP_CENTER);
+        centerBox.getChildren().addAll(labelMain,  buttonBox);
 
+        HBox bottomBox = new HBox(10);
+        bottomBox.setAlignment(Pos.BOTTOM_RIGHT);
+        bottomBox.getChildren().addAll(buttonStopMario);
 
-        HBox button_box = new HBox(40);
-        button_box.setPadding(new Insets(10, 0, 0, 0));
-        button_box.setAlignment(Pos.CENTER);
-        button_box.getChildren().addAll(button_aes, button_des, button_rsa);
-
-        VBox left_box = new VBox(2);
-        left_box.setPadding(new Insets(0, 15, 0, 0));
-        left_box.getChildren().addAll(imageView, label_prog_name);
-        left_box.setAlignment(Pos.TOP_CENTER);
-
-        VBox center_box = new VBox(15);
-        center_box.setAlignment(Pos.TOP_CENTER);
-        center_box.getChildren().addAll(label_main, button_box);
-
-        HBox bottom_box = new HBox(10);
-        bottom_box.setAlignment(Pos.BOTTOM_RIGHT);
-        bottom_box.getChildren().addAll(button_stop_m);
 
         //разметка главного окна
-        BorderPane layout_main = new BorderPane();
-        layout_main.setPadding(new Insets(20));
+        BorderPane layoutMain = new BorderPane();
+        layoutMain.setPadding(new Insets(20));
         //определение места отображения Боксов
-        layout_main.setLeft(left_box);
-        layout_main.setCenter(center_box);
-        layout_main.setBottom(bottom_box);
+        layoutMain.setLeft(leftBox);
+        layoutMain.setCenter(centerBox);
+        layoutMain.setBottom(bottomBox);
+        //layoutMain.setTop(imageViewSky);
+
+        //добавить новый имг с облаками
 
         //применяем разметку к первому окну
-        Scene scene_main = new Scene(layout_main, 450, 180);
-
-        //подключение стиля
-        //scene_main.getStylesheets().add((getClass().getResource("style.css")).toExternalForm());
+        Scene sceneMain = new Scene(layoutMain, 450, 180);
 
         //задания первого окна при открытии приложения
-        primaryStage.setScene(scene_main);
+        primaryStage.setScene(sceneMain);
         primaryStage.show();
 
         // фон
-        BackgroundImage myBI = new BackgroundImage(new Image("fon.jpg", 450, 180, true, false),
+        BackgroundImage myBI = new BackgroundImage(new Image("fon1.jpg", 450, 180, true, false),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
-
-        layout_main.setBackground(new Background(myBI));
-
+        layoutMain.setBackground(new Background(myBI));
         play();
     }
 
     public void play () {
-        Player.play_music();
+        Player.playMusic();
     }
 
-    private void stop1() {
-        Player.stop_music();
+    public void stop() {
+        Player.stopMusic();
     }
 }

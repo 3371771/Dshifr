@@ -15,168 +15,163 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 
 class AlertWindow {
-    private static Scene scene_todo;
-    private static Label file_name_label;
-    private static Stage window_choose;
-    private static String file_name_1;
-    static String to_do;
+    private static Scene sceneTodo;
+    private static Label fileNameLabel;
+    private static Stage windowChoose;
+    private static String fileName;
+    static String toDo;
     static File file;
-    static String title1;
+    static String titleOut;
     private static String err;
 
-    static void display(String title){
-        window_choose = new Stage();
-        window_choose.initModality(Modality.APPLICATION_MODAL);
-        window_choose.setTitle(title);
-        title1 = title;
-        window_choose.setHeight(200);
-        window_choose.setWidth(700);
+    static void display(String title) {
+        windowChoose = new Stage();
+        windowChoose.initModality(Modality.APPLICATION_MODAL);
+        windowChoose.setTitle(title);
+        titleOut = title;
+        //задаем размер окна
+        windowChoose.setHeight(200);
+        windowChoose.setWidth(700);
+        //задаем иконку окна
+        windowChoose.getIcons().add(new Image("icon_mini.jpg"));
 
-        window_choose.getIcons().add(new Image("icon_mini.jpg"));
-
+        //задаем картинку для отображения
         ImageView imageView = new ImageView("question.jpg");
 
-        Label label_choose = new Label("С каким файлом будем работать?");
-        label_choose.setFont(Font.font("Courier New",17));
+        //объявляем надпись и задаем текст стиль и шрифт
+        Label labelChoose = new Label("С каким файлом будем работать?");
+        labelChoose.setFont(Font.font("Courier New",17));
 
-        Button button_choose = new Button("Выбор файла");
-        button_choose.setStyle("-fx-base: #71DF89; ");
-        button_choose.setFont(Font.font("Courier New",15));
-        button_choose.setOnAction(e-> {
+        //объявляем кнопку и задаем текст цвет и шрифт
+        Button buttonChoose = new Button("Выбор файла");
+        buttonChoose.setStyle("-fx-base: #71DF89; ");
+        buttonChoose.setFont(Font.font("Courier New",15));
+        //объявляем действие для кнопки
+        buttonChoose.setOnAction(e-> {
             try {
-                //получаем путь к открываемому файлу для отображения
-                file_name_1 = hndlOpenFile().getName();
+                //получаем имя выбранного файла для отображения
+                fileName = openFile().getName();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            file_name_label.setText("Вы выбрали: " + file_name_1);
-        window_choose.setScene(scene_todo);});
+            // передаем полученное имя в новую сцену
+            fileNameLabel.setText("Вы выбрали: " + fileName);
+            //задаем для окна новую сцену
+            windowChoose.setScene(sceneTodo);});
 
-//        Button serch_file = new Button("...");
-//        serch_file.setStyle("-fx-base: #b6e7c9; ");
-//        serch_file.setFont(Font.font("Courier New",15));
+        //объявляем кнопку и задаем текст цвет и шрифт
+        Button buttonKayRsaGen = new Button("Сгенерировать ключи");
+        buttonKayRsaGen.setStyle("-fx-base: #71DF89; ");
+        buttonKayRsaGen.setFont(Font.font("Courier New",15));
+        buttonKayRsaGen.setOnAction(e -> {
+            try {
+                //генерация ключей
+                Controller.RsaKayGen();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        });
 
+        //проверка: если алгоритм RSA, то показываем кнопку генерации ключей
+        if (!title.equals("RSA")) {
+            buttonKayRsaGen.setVisible(false);
+        }
 
-        VBox v_layout_choose = new VBox(15);
-        v_layout_choose.setPadding(new Insets(13));
-        v_layout_choose.getChildren().addAll(label_choose, button_choose);
-        v_layout_choose.setAlignment(Pos.CENTER);
-       // layout_choose.setStyle("-fx-backround-color: #000000");
+        //собираем элементы в боксы и распределяем их там
+        VBox vLayoutChoose = new VBox(15);
+        vLayoutChoose.setPadding(new Insets(13));
+        vLayoutChoose.getChildren().addAll(labelChoose, buttonChoose, buttonKayRsaGen);
+        vLayoutChoose.setAlignment(Pos.CENTER);
 
-        HBox h_layout_choose = new HBox(15);
-        h_layout_choose.setPadding(new Insets(13));
-        h_layout_choose.getChildren().addAll(imageView, v_layout_choose);
-        h_layout_choose.setAlignment(Pos.CENTER);
+        HBox hLayoutChoose = new HBox(15);
+        hLayoutChoose.setPadding(new Insets(13));
+        hLayoutChoose.getChildren().addAll(imageView, vLayoutChoose);
+        hLayoutChoose.setAlignment(Pos.CENTER);
 
+        //привязываем бокс с сцене, а сцену к окну и показываем
+        Scene sceneChoose = new Scene(hLayoutChoose);
+        windowChoose.setScene(sceneChoose);
+        windowChoose.show();
 
-        Scene scene_choose = new Scene(h_layout_choose);
-        window_choose.setScene(scene_choose);
-        window_choose.show();
+        //разметка и логика окна действия с файлом
+        Label labelTodo = new Label("Что сделать с этим файлом?");
+        labelTodo.setFont(Font.font("Courier New",17));
 
-//разметка и логика окна действия с файлом
+        Button buttonTodoEncrypt = new Button("Зашифровать");
+        buttonTodoEncrypt.setStyle("-fx-base: #71DF89;");
+        buttonTodoEncrypt.setFont(Font.font("Courier New",17));
+        buttonTodoEncrypt.setOnAction(e -> {
+            if (title.equals("RSA") && (AlertWindow.file.length()>501)) {
+                    BadFile.display("Такой большой файл я зашифровать не смогу :( До 501б максимум");
+                    BadFile.buttonYes.setVisible(false);
+                    BadFile.windowError.setWidth(850);
+            } else {
+            toDo = "encrypt";
+            CloseDialog.display("Файл зашифрован!");
+            windowChoose.close(); }
+        });
 
-        Label label_todo = new Label("Что сделать с этим файлом?");
-        label_todo.setFont(Font.font("Courier New",17));
-
-
-        Button button_todo_zash = new Button("Зашифровать");
-        button_todo_zash.setStyle("-fx-base: #71DF89;");
-        button_todo_zash.setFont(Font.font("Courier New",17));
-        button_todo_zash.setOnAction(e -> {
-
-
-                            to_do = "zash";
-
-                    CloseDialog.display("Файл зашифрован!");
-                    window_choose.close();
-                    }
-                );
-
-        Button button_todo_rash = new Button("Расшифровать");
-        button_todo_rash.setStyle("-fx-base: #71DF89;");
-        button_todo_rash.setFont(Font.font("Courier New",17));
-        button_todo_rash.setOnAction((ActionEvent e) -> {
+        Button buttonTodoDecrypt = new Button("Расшифровать");
+        buttonTodoDecrypt.setStyle("-fx-base: #71DF89;");
+        buttonTodoDecrypt.setFont(Font.font("Courier New",17));
+        buttonTodoDecrypt.setOnAction((ActionEvent e) -> {
 
             //сюда проверку на то ,чем зашифрован
-            //окно вы восклицательным знаком + ОК + отмена
-            //и зашифрован ли вообще (по названию)
-            //-файл заишфрован другим алгоритмом. Получится белебирда, но я могу. Хотите?
-            //-файл не зашифрован. Получится белебирда, но я могу. Хотите?
+            //и зашифрован ли вообще
 
-            if (!file_name_1.contains("_зашифрован")) {
+            if (!fileName.contains("_зашифрован")) {
                 System.out.println("Файл не зашифрован. При расшифровке будет фигня!");
                 err = "Файл не зашифрован. При расшифровке будет фигня!";
                 BadFile.display(err);
-            } else if (file_name_1.contains("расшифрован")) {
+            } else if (fileName.contains("расшифрован")) {
                 err = "Файл уже был расшифрован. При расшифровке может выйти фигня!";
                 BadFile.display(err);
-            } else if (!file_name_1.contains(title)) {
-                System.out.println(title);
-                System.out.println(file_name_1);
+            } else if (!fileName.contains(title)) {
                 err = "Так сделать нельзя. Файл зашифрован другим алгоритмом!";
                 BadFile.display(err);
+                BadFile.buttonYes.setVisible(false);
             } else fun();
-
-//            switch (title) {
-//                case "Алгоритм AES":
-//                    System.out.println("запуск AES");
-//                    to_do = "rassh";
-//                    break;
-//                case "Алгоритм DES":
-//                    System.out.println("запуск DES");
-//                    to_do = "rassh";
-//                    break;
-//                case "Алгоритм RSA":
-//                    System.out.println("запуск RSA");
-//                    break;
-//            }
-//            CloseDialog.display("Файл расшифрован!");
         });
 
-        file_name_label = new Label();
-        file_name_label.setFont(Font.font("Courier New",15));
-        file_name_label.setStyle("-fx-font-weight:bold;");
+        fileNameLabel = new Label();
+        fileNameLabel.setFont(Font.font("Courier New",15));
+        fileNameLabel.setStyle("-fx-font-weight:bold;");
 
         ImageView imageView1 = new ImageView("question.jpg");
 
-        VBox v_layout_todo = new VBox(15);
-        v_layout_todo.setAlignment(Pos.CENTER);
-        v_layout_todo.setPadding(new Insets(13));
-        v_layout_todo.getChildren().addAll(file_name_label, label_todo, button_todo_rash, button_todo_zash);
+        VBox vLayoutTodo = new VBox(15);
+        vLayoutTodo.setAlignment(Pos.CENTER);
+        vLayoutTodo.setPadding(new Insets(13));
+        vLayoutTodo.getChildren().addAll(fileNameLabel, labelTodo, buttonTodoEncrypt, buttonTodoDecrypt);
 
-        HBox h_layout_todo = new HBox(15);
-        h_layout_todo.setAlignment(Pos.CENTER);
-        h_layout_todo.setPadding(new Insets(13));
-        h_layout_todo.getChildren().addAll(imageView1, v_layout_todo);
+        HBox hLayoutTodo = new HBox(15);
+        hLayoutTodo.setAlignment(Pos.CENTER);
+        hLayoutTodo.setPadding(new Insets(13));
+        hLayoutTodo.getChildren().addAll(imageView1, vLayoutTodo);
 
-
-        scene_todo = new Scene(h_layout_todo, 350, 220);
+        sceneTodo = new Scene(hLayoutTodo, 350, 220);
     }
 
-    static void close() {
-        window_choose.close();
-    }
-
-    private static File hndlOpenFile() throws IOException  {
-        //String file_name = "";
+    private static File openFile() throws IOException  {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Открыть файл");
         FileChooser.ExtensionFilter extFilter =
                new FileChooser.ExtensionFilter("Все типы файлов (*.*)", "*.*");
         fileChooser.getExtensionFilters().add(extFilter);
-        file = fileChooser.showOpenDialog(window_choose);
-//        if (file != null) {
-//           // file_name = file.getAbsolutePath();
-//        }
+        file = fileChooser.showOpenDialog(windowChoose);
         return file;
     }
 
-    static void fun() {
-        to_do = "rassh";
+    static void fun () {
+        toDo = "decrypt";
         CloseDialog.display("Файл расшифрован!");
     }
 
+    static void close() {
+        windowChoose.close();
+    }
 }

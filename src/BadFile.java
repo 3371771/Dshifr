@@ -14,56 +14,54 @@ import javafx.stage.Stage;
 
 public class BadFile {
 
+    static Button buttonYes;
+    static Stage windowError = new Stage();
+
     static void display (String err) {
 
-        Stage window_error = new Stage();
+        windowError.getIcons().add(new Image("icon_.jpg"));
 
-        window_error.getIcons().add(new Image("icon_.jpg"));
+        windowError.initModality(Modality.APPLICATION_MODAL);
+        windowError.setTitle("Ошибка!!");
+        windowError.setHeight(200);
+        windowError.setWidth(750);
 
-        window_error.initModality(Modality.APPLICATION_MODAL);
-        window_error.setTitle("Ошибка!!");
-        window_error.setHeight(200);
-        window_error.setWidth(750);
+        Label labelError = new Label(err);
+        labelError.setFont(Font.font("Courier New",17));
 
-        Label label_error = new Label(err);
-        label_error.setFont(Font.font("Courier New",17));
-
-        Button button_no = new Button("ОЙ, я передумал");
-        button_no.setStyle("-fx-base: #71DF89;");
-        button_no.setFont(Font.font("Courier New",17));
-        button_no.setOnAction((ActionEvent e) -> {
-            window_error.close();
+        Button buttonNo = new Button("ОЙ, я передумал");
+        buttonNo.setStyle("-fx-base: #71DF89;");
+        buttonNo.setFont(Font.font("Courier New",17));
+        buttonNo.setOnAction((ActionEvent e) -> {
+            windowError.close();
             AlertWindow.close();
         });
 
-        Button button_yes = new Button("Ну и пусть!");
-        button_yes.setStyle("-fx-base: #71DF89;");
-        button_yes.setFont(Font.font("Courier New",17));
-        button_yes.setOnAction((ActionEvent e) -> {
-            window_error.close();
+        buttonYes = new Button("Ну и пусть!");
+        buttonYes.setStyle("-fx-base: #71DF89;");
+        buttonYes.setFont(Font.font("Courier New",17));
+        buttonYes.setOnAction((ActionEvent e) -> {
+            windowError.close();
             AlertWindow.fun();
         });
-
-        if (err.equals("Так сделать нельзя. Файл зашифрован другим алгоритмом!")){
-            button_yes.setVisible(false);
-        }
-
+//        if (err.equals("Так сделать нельзя. Файл зашифрован другим алгоритмом!")){
+//            buttonYes.setVisible(false);
+//        }
         ImageView imageView1 = new ImageView("atten_red.jpg");
 
+        VBox vLayoutErr = new VBox(15);
+        vLayoutErr.setAlignment(Pos.CENTER);
+        vLayoutErr.setPadding(new Insets(13));
+        vLayoutErr.getChildren().addAll(labelError,buttonYes, buttonNo);
 
-        VBox v_layout_err = new VBox(15);
-        v_layout_err.setAlignment(Pos.CENTER);
-        v_layout_err.setPadding(new Insets(13));
-        v_layout_err.getChildren().addAll(label_error,button_yes, button_no);
+        HBox hLayoutErr = new HBox(15);
+        hLayoutErr.setAlignment(Pos.CENTER);
+        hLayoutErr.setPadding(new Insets(13));
+        hLayoutErr.getChildren().addAll(imageView1, vLayoutErr);
 
-        HBox h_layout_err = new HBox(15);
-        h_layout_err.setAlignment(Pos.CENTER);
-        h_layout_err.setPadding(new Insets(13));
-        h_layout_err.getChildren().addAll(imageView1, v_layout_err);
+        Scene sceneErr = new Scene(hLayoutErr, 350, 220);
 
-        Scene scene_err = new Scene(h_layout_err, 350, 220);
-
-        window_error.setScene(scene_err);
-        window_error.show();
+        windowError.setScene(sceneErr);
+        windowError.show();
     }
 }

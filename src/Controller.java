@@ -1,239 +1,283 @@
 import javax.crypto.*;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.*;
 
 
-public class Controller {
+class Controller {
 
-   // private static SecretKey secKey;
+    private static Key pubKeyRSA;
+    private static Key privKeyRSA;
 
-
-    static void DES(int n) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException, ClassNotFoundException {
+    static void DES(int n) throws Exception {
 
         Cipher cipher = Cipher.getInstance("DES");
+        SecretKey secKeyDES;
 
-        // System.out.println(secKey);
+        String fileName = AlertWindow.file.getName();
+        int indexEncrypt = fileName.lastIndexOf(".");
+        int indexDecrypt = fileName.lastIndexOf("з");
 
-        String file_name = AlertWindow.file.getName();
-        int index = file_name.lastIndexOf(".");
-        int index2 = file_name.lastIndexOf("з");
-
-        SecretKey secKey;
+        //разделение на зашифровку и расшифровку
+        // сперва зашифровка
         if (n == 1) {
 
             System.out.println("зашифровка DES");
 
-            // secKey = new SecretKeySpec("DES12345".getBytes(), "DES");
-
             //генерация ключа
             KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
-            secKey = keyGenerator.generateKey();
+            secKeyDES = keyGenerator.generateKey();
 
-            //сериализация кея
-
-            FileOutputStream fileOutputStream = new FileOutputStream("secKey");
+            //сериализация ключа
+            FileOutputStream fileOutputStream = new FileOutputStream("secKeyDES");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(secKey);
+            objectOutputStream.writeObject(secKeyDES);
             objectOutputStream.close();
 
-            //
+            //указание, что хотим зашифровать
+            cipher.init(Cipher.ENCRYPT_MODE, secKeyDES);
 
-            cipher.init(Cipher.ENCRYPT_MODE, secKey);
-
+            //получаем путь к файлу, который будем шифровать
             String cleartextFile = AlertWindow.file.getAbsolutePath();
-            String ciperFile = AlertWindow.file.getParent() + "\\" + file_name.substring(0, index) + "_зашифрован_DES." + file_name.substring(file_name.lastIndexOf(".") + 1);
+            //формируем имя файла, в который будем сохранять расшифроанный докумнет
+            String cipherFile = AlertWindow.file.getParent() + "\\" + fileName.substring(0, indexEncrypt) + "_зашифрован_DES." + fileName.substring(fileName.lastIndexOf(".") + 1);
 
+            // объявляем потоки
             FileInputStream fis = new FileInputStream(cleartextFile);
-            FileOutputStream fos = new FileOutputStream(ciperFile);
+            FileOutputStream fos = new FileOutputStream(cipherFile);
+
             System.out.println("Зашифровали " + cleartextFile);
-            System.out.println("Вот сюда " + ciperFile);
+            System.out.println("Вот сюда " + cipherFile);
+
+            // сохраняем полученный файл
             CipherOutputStream cos = new CipherOutputStream(fos, cipher);
-
             byte[] block = new byte[8];
-
             int i;
-
             while ((i = fis.read(block)) != -1) {
                 cos.write(block, 0, i);
             }
+            // закрываем поток
             cos.close();
+
+            // расшифровка
         } else if (n == 2) {
 
             System.out.println("расшифровываем DES");
 
-            FileInputStream fileInputStream = new FileInputStream("secKey");
+            // достаем ключ из файла
+            FileInputStream fileInputStream = new FileInputStream("secKeyDES");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            secKey = (SecretKey) objectInputStream.readObject();
+            secKeyDES = (SecretKey) objectInputStream.readObject();
 
-            cipher.init(Cipher.DECRYPT_MODE, secKey);
+            //указание, что хотим расшифровать
+            cipher.init(Cipher.DECRYPT_MODE, secKeyDES);
 
-            String cleartextAgainFile = AlertWindow.file.getParent() + "\\" + file_name.substring(0, index2) + "расшифрован_DES." + file_name.substring(file_name.lastIndexOf(".") + 1);
-            String ciperFile = AlertWindow.file.getAbsolutePath();
+            //получаем путь к файлу, который будем расшифровывать
+            String cipherFile = AlertWindow.file.getAbsolutePath();
+            //формируем имя файла, в который будем сохранять расшифроанный докумнет
+            String cleartextAgainFile = AlertWindow.file.getParent() + "\\" + fileName.substring(0, indexDecrypt) + "расшифрован_DES." + fileName.substring(fileName.lastIndexOf(".") + 1);
 
-            FileOutputStream fos;
-            FileInputStream fis;
+            // объявляем потоки
+            FileOutputStream fos = new FileOutputStream(cleartextAgainFile);
+            FileInputStream fis = new FileInputStream(cipherFile);
 
-            fis = new FileInputStream(ciperFile);
             System.out.println("Расшифровываем сюда" + cleartextAgainFile);
-            System.out.println("Вот это " + ciperFile);
+            System.out.println("Вот это " + cipherFile);
 
+            // сохраняем полученный файл
             CipherInputStream cis = new CipherInputStream(fis, cipher);
-            fos = new FileOutputStream(cleartextAgainFile);
-
             byte[] block = new byte[8];
-
             int i;
-
             while ((i = cis.read(block)) != -1) {
                 fos.write(block, 0, i);
             }
-
             fos.close();
         }
     }
 
-    static void AES(int n) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IOException {
+    static void AES(int n) throws Exception {
 
-
-        //тут деленеи на расшифровку и зашифровку
         Cipher cipher = Cipher.getInstance("AES");
+        SecretKey secKeyAES;
 
-        //KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        //SecretKey secKey = keyGen.generateKey();
-
-        SecretKeySpec secKey = new SecretKeySpec("AES12345aes12345".getBytes(), "AES");
-
-        String file_name = AlertWindow.file.getName();
-        int index = file_name.lastIndexOf(".");
-        int index2 = file_name.lastIndexOf("з");
+        String fileName = AlertWindow.file.getName();
+        int indexEncrypt = fileName.lastIndexOf(".");
+        int indexDecrypt = fileName.lastIndexOf("з");
 
         if (n == 1) {
-
             System.out.println("зашифровка AES");
 
-            cipher.init(Cipher.ENCRYPT_MODE, secKey);
+            //генерируем ключ
+            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+            secKeyAES = keyGen.generateKey();
 
+            //сериализация ключа
+            FileOutputStream fileOutputStream = new FileOutputStream("secKeyAES");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(secKeyAES);
+            objectOutputStream.close();
+
+            //указание, что хотим зашифровать
+            cipher.init(Cipher.ENCRYPT_MODE, secKeyAES);
+
+            //получаем путь к файлу, который будем зашифровывать
             String cleartextFile = AlertWindow.file.getAbsolutePath();
-            String ciperFile = AlertWindow.file.getParent() + "\\" + file_name.substring(0, index) + "_зашифрован_AES." + file_name.substring(file_name.lastIndexOf(".") + 1);
 
+            //формируем имя файла, в который будем сохранять зашифроанный докумнет
+            String cipherFile = AlertWindow.file.getParent() + "\\" + fileName.substring(0, indexEncrypt) + "_зашифрован_AES." + fileName.substring(fileName.lastIndexOf(".") + 1);
+
+            // объявляем потоки
             FileInputStream fis = new FileInputStream(cleartextFile);
-            FileOutputStream fos = new FileOutputStream(ciperFile);
+            FileOutputStream fos = new FileOutputStream(cipherFile);
+
             System.out.println("Зашифровали " + cleartextFile);
-            System.out.println("Вот сюда " + ciperFile);
+            System.out.println("Вот сюда " + cipherFile);
+
+            // сохраняем полученный файл
             CipherOutputStream cos = new CipherOutputStream(fos, cipher);
-
             byte[] block = new byte[8];
-
             int i;
-
             while ((i = fis.read(block)) != -1) {
                 cos.write(block, 0, i);
             }
             cos.close();
+
         } else if (n == 2) {
 
             System.out.println("расшифровываем AES");
 
-            cipher.init(Cipher.DECRYPT_MODE, secKey);
+            // достаем ключ из файла
+            FileInputStream fileInputStream = new FileInputStream("secKeyAES");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            secKeyAES = (SecretKey) objectInputStream.readObject();
 
-            String cleartextAgainFile = AlertWindow.file.getParent() + "\\" + file_name.substring(0, index) + "расшифрован_AES." + file_name.substring(file_name.lastIndexOf(".") + 1);
-            String ciperFile = AlertWindow.file.getAbsolutePath();
+            //указание, что хотим расшифровать
+            cipher.init(Cipher.DECRYPT_MODE, secKeyAES);
 
-            FileOutputStream fos;
-            FileInputStream fis;
+            //получаем путь к файлу, который будем расшифровывать
+            String cipherFile = AlertWindow.file.getAbsolutePath();
 
-            fis = new FileInputStream(ciperFile);
+            //формируем имя файла, в который будем сохранять расшифроанный докумнет
+            String cleartextAgainFile = AlertWindow.file.getParent() + "\\" + fileName.substring(0, indexDecrypt) + "расшифрован_AES." + fileName.substring(fileName.lastIndexOf(".") + 1);
+
+            // объявляем потоки
+            FileOutputStream fos = new FileOutputStream(cleartextAgainFile);
+            FileInputStream fis = new FileInputStream(cipherFile);
+
             System.out.println("Расшифровываем сюда" + cleartextAgainFile);
-            System.out.println("Вот это " + ciperFile);
+            System.out.println("Вот это " + cipherFile);
 
             CipherInputStream cis = new CipherInputStream(fis, cipher);
-            fos = new FileOutputStream(cleartextAgainFile);
-
             byte[] block = new byte[8];
-
             int i;
-
             while ((i = cis.read(block)) != -1) {
                 fos.write(block, 0, i);
             }
-
             fos.close();
         }
     }
 
-    static void RSA(int n) throws Exception {
-
-        String file_name = AlertWindow.file.getName();
-        int index = file_name.lastIndexOf(".");
-        int index2 = file_name.lastIndexOf("з");
-
-        Cipher cipher = Cipher.getInstance("RSA");
+    static void RsaKayGen() throws Exception {
 
         KeyPairGenerator genPair = KeyPairGenerator.getInstance("RSA");
         KeyPair keys = genPair.generateKeyPair();
-        Key pubKey = keys.getPublic();
-        Key privKey = keys.getPrivate();
+        pubKeyRSA = keys.getPublic();
+        privKeyRSA = keys.getPrivate();
+        System.out.println(privKeyRSA);
+        System.out.println(pubKeyRSA);
 
+        //записываем закрытый ключи в файл
+        FileOutputStream fileOutputStreamPriv = new FileOutputStream("privKeyRSA");
+        ObjectOutputStream objectOutputStreamPriv = new ObjectOutputStream(fileOutputStreamPriv);
+        objectOutputStreamPriv.writeObject(privKeyRSA);
+        objectOutputStreamPriv.close();
 
- //       if (n==1) {
+        FileOutputStream fileOutputStreamPub = new FileOutputStream("pubKeyRSA");
+        ObjectOutputStream objectOutputStreamPub = new ObjectOutputStream(fileOutputStreamPub);
+        objectOutputStreamPub.writeObject(pubKeyRSA);
+        objectOutputStreamPub.close();
+    }
+
+    static void RSA(int n) throws Exception {
+
+        Cipher cipher = Cipher.getInstance("RSA");
+
+        String fileName = AlertWindow.file.getName();
+        int indexEncrypt = fileName.lastIndexOf(".");
+        int indexDecrypt = fileName.lastIndexOf("з");
+
+        if (n==1) {
+
             System.out.println("Зашифровка RSA");
+            //проверяем есть ли на ПК публичный ключ для шифроания файлов
+            if (!new File("pubKeyRSA").exists()) {
+                //если нет, генерим пару ключей и сохраняем
+                //генерируем пару ключей (открытый и закрытый)
+                try {
+                    RsaKayGen();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //если есть, берем из файла
+                // достаем ключ из файла
+                System.out.println("есть");
+                FileInputStream fileInputStream = new FileInputStream("pubKeyRSA");
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                pubKeyRSA = (Key) objectInputStream.readObject();
+            }
 
-            cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+            //указание, что хотим зашифровать
+            cipher.init(Cipher.ENCRYPT_MODE, pubKeyRSA);
 
             String cleartextFile = AlertWindow.file.getAbsolutePath();
-            String ciperFile = AlertWindow.file.getParent() + "\\" + file_name.substring(0, index) + "_зашифрован_RSA." + file_name.substring(file_name.lastIndexOf(".") + 1);
+            String cipherFile = AlertWindow.file.getParent() + "\\" + fileName.substring(0, indexEncrypt) + "_зашифрован_RSA." + fileName.substring(fileName.lastIndexOf(".") + 1);
 
             FileInputStream fis = new FileInputStream(cleartextFile);
-            FileOutputStream fos = new FileOutputStream(ciperFile);
+            FileOutputStream fos = new FileOutputStream(cipherFile);
             System.out.println("Зашифровали " + cleartextFile);
-            System.out.println("Вот сюда " + ciperFile);
+            System.out.println("Вот сюда " + cipherFile);
             CipherOutputStream cos = new CipherOutputStream(fos, cipher);
 
-            byte[] block = new byte[56];
+                byte[] block = new byte[8];
+                int i;
+                while ((i = fis.read(block)) != -1) {
+                    cos.write(block, 0, i);
+                }
+                cos.close();
 
-            int i;
+        } else if (n==2) {
 
-            while ((i = fis.read(block)) != -1) {
-                cos.write(block, 0, i);
-            }
-            cos.close();
-
-  //      } else if (n==2) {
             System.out.println("расшифровка RSA");
 
-        Cipher cipher1 = Cipher.getInstance("RSA");
-            cipher1.init(Cipher.DECRYPT_MODE, privKey);
+            // достаем ключ из файла
+            FileInputStream fileInputStream = new FileInputStream("privKeyRSA");
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            privKeyRSA = (Key) objectInputStream.readObject();
+            System.out.println(privKeyRSA);
 
-            String cleartextAgainFile = AlertWindow.file.getParent() + "\\" + file_name.substring(0, index2)  + "расшифрован_RSA." +  file_name.substring(file_name.lastIndexOf(".")+1);
-            String ciperFile1 = AlertWindow.file.getAbsolutePath();
+            //указание, что хотим расшифровать
+            cipher.init(Cipher.DECRYPT_MODE, privKeyRSA);
 
-            FileOutputStream fos1;
-            FileInputStream fis1;
+            String cipherFile = AlertWindow.file.getAbsolutePath();
+            String cleartextAgainFile = AlertWindow.file.getParent() + "\\" + fileName.substring(0, indexDecrypt)  + "расшифрован_RSA." +  fileName.substring(fileName.lastIndexOf(".")+1);
 
-            fis1 = new FileInputStream(ciperFile);
+            FileOutputStream fos = new FileOutputStream(cleartextAgainFile);
+            FileInputStream fis = new FileInputStream(cipherFile);
+
             System.out.println("Расшифровываем сюда" + cleartextAgainFile);
-            System.out.println("Вот это " + ciperFile);
+            System.out.println("Вот это " + cipherFile);
 
-            CipherInputStream cis1 = new CipherInputStream(fis1, cipher1);
-            fos1 = new FileOutputStream(cleartextAgainFile);
+            CipherInputStream cis = new CipherInputStream(fis, cipher);
 
-      //      byte[] block = new byte[8];
-
-     //       int i;
-
-            while ((i = cis1.read(block)) != -1) {
-                fos1.write(block, 0, i);
+            byte[] block = new byte[8];
+            int i;
+            while ((i = cis.read(block)) != -1) {
+                fos.write(block, 0, i);
             }
-
-            fos1.close();
-
+            fos.close();
         }
-
     }
-//}
+}
 
 
 

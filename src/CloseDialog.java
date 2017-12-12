@@ -11,90 +11,87 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.crypto.NoSuchPaddingException;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 class CloseDialog {
 
-    static void display(String title_close) {
-        Stage window_close = new Stage();
-        if (title_close.equals("Файл зашифрован!")) {
-            window_close.getIcons().add(new Image("closet.jpg"));
+    private static Boolean fileSave = false;
+
+    static void display(String titleClose) {
+        Stage windowClose = new Stage();
+        if (titleClose.equals("Файл зашифрован!")) {
+            windowClose.getIcons().add(new Image("closet.jpg"));
         } else {
-            window_close.getIcons().add(new Image("open.jpg"));
+            windowClose.getIcons().add(new Image("open.jpg"));
         }
 
-        window_close.initModality(Modality.APPLICATION_MODAL);
-        window_close.setTitle("Что сделать?");
-        window_close.setHeight(190);
-        window_close.setWidth(350);
+        windowClose.initModality(Modality.APPLICATION_MODAL);
+        windowClose.setTitle("Что сделать?");
+        windowClose.setHeight(190);
+        windowClose.setWidth(350);
 
-        window_close.setOnCloseRequest(e -> {
-            close_req();
-            e.consume();
+        windowClose.setOnCloseRequest(e -> {
+            if (!fileSave) {
+                close_req();
+                e.consume();
+            } else windowClose.close();
         });
 
-        Label label_how_close = new Label(title_close);
-        label_how_close.setFont(Font.font("Courier New", 17));
+        Label labelHowClose = new Label(titleClose);
+        labelHowClose.setFont(Font.font("Courier New", 17));
 
         ImageView imageView = new ImageView("atten.jpg");
 
-        Button btn_no_save = new Button("Не сохранять");
-        btn_no_save.setStyle("-fx-base: #71DF89; ");
-        btn_no_save.setFont(Font.font("Courier New", 17));
-        btn_no_save.setOnAction(e -> {
-            window_close.close();
+        Button buttonNoSave = new Button("Не сохранять");
+        buttonNoSave.setStyle("-fx-base: #71DF89; ");
+        buttonNoSave.setFont(Font.font("Courier New", 17));
+        buttonNoSave.setOnAction(e -> {
+            windowClose.close();
             AlertWindow.close();
         });
 
-        Button btn_save = new Button("Сохранить");
-        btn_save.setStyle("-fx-base: #71DF89; ");
-        btn_save.setFont(Font.font("Courier New", 17));
+        Button buttonSave = new Button("Сохранить");
+        buttonSave.setStyle("-fx-base: #71DF89; ");
+        buttonSave.setFont(Font.font("Courier New", 17));
 
-        btn_save.setOnAction(e -> {
-            if (AlertWindow.to_do.equals("zash")) {
-                switch (AlertWindow.title1) {
+        buttonSave.setOnAction(e -> {
+            fileSave = true;
+            if (AlertWindow.toDo.equals("encrypt")) {
+                switch (AlertWindow.titleOut) {
                     case "AES":
                         try {
                             Controller.AES(1);
-                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                         break;
                     case "DES":
                         try {
                             Controller.DES(1);
-                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException | ClassNotFoundException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                         break;
                     case "RSA":
                         try {
-                            Controller.RSA(1);
+                        Controller.RSA(1);
                         } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                         break;
                     default: break;
                 }
-
             } else
-
-            {
-                switch (AlertWindow.title1) {
+                { switch (AlertWindow.titleOut) {
                     case  "AES":
                         try {
                             Controller.AES(2);
-                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                         break;
                     case "DES":
                         try {
                             Controller.DES(2);
-                        } catch (NoSuchPaddingException | NoSuchAlgorithmException | IOException | InvalidKeyException | ClassNotFoundException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                         break;
@@ -108,83 +105,88 @@ class CloseDialog {
                     default: break;
                 }
             }
-            label_how_close.setText("Сохранено!");
-            btn_save.setVisible(false);
-            btn_no_save.setText("Понятно!");
-            window_close.setTitle("Результат");
+            //ToDo: сюда ожидание на секунды 2
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            labelHowClose.setText("Сохранено!");
+            buttonSave.setVisible(false);
+            buttonNoSave.setText("Понятно!");
+            windowClose.setTitle("Результат");
         });
 
-        VBox v_layout_close = new VBox(15);
-        v_layout_close.getChildren().addAll(label_how_close, btn_save, btn_no_save);
-        v_layout_close.setAlignment(Pos.CENTER);
+        VBox vLayoutClose = new VBox(15);
+        vLayoutClose.getChildren().addAll(labelHowClose, buttonSave, buttonNoSave);
+        vLayoutClose.setAlignment(Pos.CENTER);
 
-        HBox h_layout_close = new HBox(15);
-        h_layout_close.getChildren().addAll(imageView, v_layout_close);
-        h_layout_close.setAlignment(Pos.CENTER);
+        HBox hLayoutClose = new HBox(15);
+        hLayoutClose.getChildren().addAll(imageView, vLayoutClose);
+        hLayoutClose.setAlignment(Pos.CENTER);
 
-        Scene scene_close = new Scene(h_layout_close);
+        Scene sceneClose = new Scene(hLayoutClose);
 
-        window_close.setScene(scene_close);
-        window_close.show();
+        windowClose.setScene(sceneClose);
+        windowClose.show();
     }
 
     //окно ВНИМАНИЕ!!
     private static void close_req() {
 
-        Stage window_do_not = new Stage();
-        window_do_not.initModality(Modality.APPLICATION_MODAL);
-        window_do_not.setTitle("ВНИМАНИЕ!!");
-        window_do_not.setMinHeight(170);
-        window_do_not.setMinWidth(170);
+        Stage windowDoNot = new Stage();
+        windowDoNot.initModality(Modality.APPLICATION_MODAL);
+        windowDoNot.setTitle("ВНИМАНИЕ!!");
+        windowDoNot.setMinHeight(170);
+        windowDoNot.setMinWidth(170);
 
-        window_do_not.getIcons().add(new Image("icon_.jpg"));
+        windowDoNot.getIcons().add(new Image("icon_.jpg"));
 
-        String adwise = randomiz();
+        String advice = random();
 
-        Label do_not_do_this = new Label(adwise);
-        do_not_do_this.setFont(Font.font("Courier New", 17));
+        Label doNotDoThis = new Label(advice);
+        doNotDoThis.setFont(Font.font("Courier New", 17));
 
-        ImageView imageView1 = new ImageView("atten_red.jpg");
+        ImageView imageViewAttRed = new ImageView("atten_red.jpg");
 
-        Button ok_button = new Button("Ok");
-        ok_button.setStyle("-fx-base: #71DF89; ");
-        ok_button.setFont(Font.font("Courier New", 17));
-        ok_button.setOnAction(e -> window_do_not.close());
+        Button buttonOk = new Button("Ok");
+        buttonOk.setStyle("-fx-base: #71DF89; ");
+        buttonOk.setFont(Font.font("Courier New", 17));
+        buttonOk.setOnAction(e -> windowDoNot.close());
 
-        VBox v_do_not_layout = new VBox(15);
-        v_do_not_layout.setPadding(new Insets(13));
-        v_do_not_layout.getChildren().addAll(do_not_do_this, ok_button);
-        v_do_not_layout.setAlignment(Pos.CENTER);
+        VBox vDoNotLayout = new VBox(15);
+        vDoNotLayout.setPadding(new Insets(13));
+        vDoNotLayout.getChildren().addAll(doNotDoThis, buttonOk);
+        vDoNotLayout.setAlignment(Pos.CENTER);
 
-        HBox h_do_not_layout = new HBox(15);
-        h_do_not_layout.getChildren().addAll(imageView1, v_do_not_layout);
-        h_do_not_layout.setPadding(new Insets(13));
-        h_do_not_layout.setAlignment(Pos.CENTER);
+        HBox hDoNotLayout = new HBox(15);
+        hDoNotLayout.getChildren().addAll(imageViewAttRed, vDoNotLayout);
+        hDoNotLayout.setPadding(new Insets(13));
+        hDoNotLayout.setAlignment(Pos.CENTER);
 
-        Scene scene_do_not = new Scene(h_do_not_layout);
+        Scene scene_do_not = new Scene(hDoNotLayout);
 
-        window_do_not.setScene(scene_do_not);
-        window_do_not.show();
+        windowDoNot.setScene(scene_do_not);
+        windowDoNot.show();
     }
 
     //разные варианты аттеншена :))
-    private static String randomiz() {
+    private static String random() {
         int a = 1; // Начальное значение диапазона - "от"
         int b = 4; // Конечное значение диапазона - "до"
-        int random_number = a + (int) (Math.random() * b);
+        int randomNumber = a + (int) (Math.random() * b);
 
-        String adwise = "";
+        String advice;
 
-        if (random_number == 1) {
-            adwise = "Сперва сохрани! Или нет, я ж просто программа, не мне тебе указывать";
-        } else if (random_number == 2) {
-            adwise = "Так нельзя, нужно что-то выбрать!";
-        } else if (random_number == 3) {
-            adwise = "Выбери, что делать!";
+        if (randomNumber == 1) {
+            advice = "Сперва сохрани! Или нет, я ж просто программа, не мне тебе указывать";
+        } else if (randomNumber == 2) {
+            advice = "Так нельзя, нужно что-то выбрать!";
+        } else if (randomNumber == 3) {
+            advice = "Выбери, что делать!";
         }  else  {
-            adwise = "A A A! А сохранить?";
+            advice = "A A A! А сохранить?";
         }
-
-        return adwise;
+        return advice;
     }
 }
